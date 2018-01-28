@@ -63,11 +63,17 @@ class App extends React.Component {
 }
 
 const Statistics = ({ state, mean, positives }) => {
+  if (state.all === 0) {
+    return <div>yhtäkään palautetta ei ole annettu</div>
+  }
+
   const round = (value, decimals) => {
     return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
   }
+
   mean = round(mean, 1)
   positives = round(positives, 1) + "%"
+
   return (
     <div>
       <Statistic text={"hyvä"} value={state.good} />
