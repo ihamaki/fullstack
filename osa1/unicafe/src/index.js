@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class App extends React.Component {
-  constructor () {
+  constructor() {
     super()
     this.state = {
       good: 0,
@@ -34,30 +34,49 @@ class App extends React.Component {
       <div>
         <h2>anna palautetta</h2>
         <Button
-          handleClick={this.handlePositive} 
+          handleClick={this.handlePositive}
           text="hyvä"
         />
-        <Button 
+        <Button
           handleClick={this.handleNeutral}
           text="neutraali"
         />
         <Button
-          handleClick={this.handleNegative} 
+          handleClick={this.handleNegative}
           text="huono"
         />
         <h2>statistiikka</h2>
-        <Statistics review="hyvä" count={this.state.good}/>
-        <Statistics review="neutraali" count={this.state.neutral}/>
-        <Statistics review="huono" count={this.state.bad}/>
+        <Statistics reviews={this.state} />
       </div>
     )
   }
 
 }
 
-const Statistics = ({ review, count }) => (
-  <div>{review} {count}</div>
-)
+const Statistics = ({ reviews }) => {
+  const all = reviews.good + reviews.neutral + reviews.bad
+  const mean = () => {
+    if (all === 0) { return 0 }
+    return round((reviews.good - reviews.bad) / all, 1)
+  }
+  const positives = () => {
+    if (all === 0) { return 0 }
+    return round(reviews.good / all * 100, 1)
+  }
+  const round = (value, decimals) => {
+    return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+  }
+
+  return (
+    <div>
+      <div>hyvä {reviews.good}</div>
+      <div>neutraali {reviews.neutral}</div>
+      <div>huono {reviews.bad}</div>
+      <div>keskiarvo {mean()}</div>
+      <div>positiivisia {positives()} %</div>
+    </div>
+  )
+}
 
 const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>
