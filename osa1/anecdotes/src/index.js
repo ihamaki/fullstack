@@ -5,7 +5,8 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      selected: this.getRandom()
+      selected: this.getRandom(),
+      votes: [0, 0, 0, 0, 0, 0]
     }
   }
 
@@ -19,13 +20,27 @@ class App extends React.Component {
     }
   }
 
+  vote = (props) => {
+    return () => {
+      const copy = [...this.state.votes]
+      copy[this.state.selected] += 1
+      this.setState({ votes: copy })
+    }
+  }
+
   render() {
+    console.log(this.state.votes)
     return (
       <div>
         <div>
           {this.props.anecdotes[this.state.selected]}
         </div>
+        <br />
         <div>
+          number of votes: {this.state.votes[this.state.selected]}
+        </div>
+        <div>
+          <button onClick={this.vote()}>vote</button>
           <button onClick={this.selectRandom()}>next</button>
         </div>
       </div>
