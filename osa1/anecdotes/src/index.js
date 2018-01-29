@@ -28,10 +28,12 @@ class App extends React.Component {
     }
   }
 
+  findBest = () => (this.state.votes.indexOf(Math.max(...this.state.votes)))
+
   render() {
-    console.log(this.state.votes)
     return (
       <div>
+        <h2>anecdote of the day:</h2>
         <div>
           {this.props.anecdotes[this.state.selected]}
         </div>
@@ -42,6 +44,14 @@ class App extends React.Component {
         <div>
           <button onClick={this.vote()}>vote</button>
           <button onClick={this.selectRandom()}>next</button>
+        </div>
+        <h2>anecdote with most votes:</h2>
+        <div>
+          {this.props.anecdotes[this.findBest()]}
+        </div>
+        <br />
+        <div>
+          number of votes: {this.state.votes[this.findBest()]}
         </div>
       </div>
     )
