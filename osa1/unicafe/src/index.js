@@ -12,25 +12,13 @@ class App extends React.Component {
     }
   }
 
-  handlePositive = () => {
-    this.setState({
-      good: this.state.good + 1,
-      all: this.state.all + 1
-    })
-  }
-
-  handleNeutral = () => {
-    this.setState({
-      neutral: this.state.neutral + 1,
-      all: this.state.all + 1
-    })
-  }
-
-  handleNegative = () => {
-    this.setState({
-      bad: this.state.bad + 1,
-      all: this.state.all + 1
-    })
+  increaseCount = (review) => {
+    return () => {
+      if (review === "good") { this.setState({ good: this.state.good + 1 }) }
+      if (review === "neutral") { this.setState({ neutral: this.state.neutral + 1 }) }
+      if (review === "bad") { this.setState({ bad: this.state.bad + 1 }) }
+      this.setState({ all: this.state.all + 1 })
+    }
   }
 
   countMean = () => {
@@ -51,9 +39,9 @@ class App extends React.Component {
     return (
       <div>
         <h2>anna palautetta</h2>
-        <Button handleClick={this.handlePositive} text="hyvä" />
-        <Button handleClick={this.handleNeutral} text="neutraali" />
-        <Button handleClick={this.handleNegative} text="huono" />
+        <Button handleClick={this.increaseCount("good")} text="hyvä" />
+        <Button handleClick={this.increaseCount("neutral")} text="neutraali" />
+        <Button handleClick={this.increaseCount("bad")} text="huono" />
         <h2>statistiikka</h2>
         <Statistics state={this.state} mean={this.countMean()} positives={this.countPositives()} />
       </div>
