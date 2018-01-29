@@ -63,18 +63,23 @@ const Statistics = ({ state, mean, positives }) => {
   positives = round(positives, 1) + "%"
 
   return (
-    <div>
-      <Statistic text={"hyvä"} value={state.good} />
-      <Statistic text={"neutraali"} value={state.neutral} />
-      <Statistic text={"huono"} value={state.bad} />
-      <Statistic text={"keskiarvo"} value={mean} />
-      <Statistic text={"positiivisia"} value={positives} />
-    </div>
+    <table>
+      <tbody>
+        <Statistic text={"hyvä"} value={state.good} />
+        <Statistic text={"neutraali"} value={state.neutral} />
+        <Statistic text={"huono"} value={state.bad} />
+        <Statistic text={"keskiarvo"} value={mean} />
+        <Statistic text={"positiivisia"} value={positives} />
+      </tbody>
+    </table>
   )
 }
 
 const Statistic = ({ text, value }) => (
-  <div>{text} {value}</div>
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
 )
 
 const Button = ({ handleClick, text }) => (
