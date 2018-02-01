@@ -4,7 +4,7 @@ import Part from './Part'
 const Content = ({ content }) => {
   return (
     <div>
-      {content.map(part=><Part key={part.id} part={part}/>)}
+      {content.map(part => <Part key={part.id} part={part} />)}
     </div>
   )
 }
