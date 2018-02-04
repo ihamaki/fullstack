@@ -1,4 +1,6 @@
 import React from 'react'
+import Input from './components/Input'
+import PersonList from './components/PersonList'
 
 class App extends React.Component {
   constructor(props) {
@@ -6,17 +8,25 @@ class App extends React.Component {
     this.state = {
       persons: [
         { name: 'Arto Hellas', number: '12345' },
-        { name: 'Matti Luukkainen', number: '000' }
+        { name: 'Matti Luukkainen', number: '000' },
+        { name: 'Urpo Urponen', number: '333-222' },
+        { name: 'Ukko Nooa', number: '191919' }
       ],
       newName: '',
-      newNumber: ''
+      newNumber: '',
+      filter: ''
     }
   }
 
   addPerson = (event) => {
     event.preventDefault()
-    const names = this.state.persons.map(person => person.name)
 
+    if (this.state.newName === '' || this.state.newNumber === '') {
+      alert('Täytä henkilölle nimi ja numero!')
+      return
+    }
+
+    const names = this.state.persons.map(person => person.name)
     if (names.includes(this.state.newName)) {
       alert('Nimi on jo puhelinluettelossa!')
       this.setState({ newName: '' })
@@ -46,20 +56,24 @@ class App extends React.Component {
     this.setState({ newNumber: event.target.value })
   }
 
+  handleFilterChange = (event) => {
+    this.setState({ filter: event.target.value })
+  }
+
+  filterPersons = () => {
+    const filter = this.state.filter.trim().toLowerCase()
+    if (filter === '') { return this.state.persons }
+    return this.state.persons.filter(person => person.name.trim().toLowerCase().match(filter))
+  }
+
   render() {
     return (
       <div>
         <h2>Puhelinluettelo</h2>
 
         <form onSubmit={this.addPerson}>
-          <div>
-            nimi:
-            <input value={this.state.newName} onChange={this.handleNameChange} />
-          </div>
-          <div>
-            numero:
-            <input value={this.state.newNumber} onChange={this.handleNumberChange} />
-          </div>
+          <Input name="nimi" value={this.state.newName} onChange={this.handleNameChange} />
+          <Input name="numero" value={this.state.newNumber} onChange={this.handleNumberChange} />
           <div>
             <button type="submit">lisää</button>
           </div>
@@ -67,23 +81,11 @@ class App extends React.Component {
 
         <h2>Numerot</h2>
 
-        <table>
-          <tbody>
-            {this.state.persons.map(person => <Person key={person.name} person={person} />)}
-          </tbody>
-        </table>
+        <Input name="etsi" value={this.state.filter} onChange={this.handleFilterChange} />
+        <PersonList persons={this.filterPersons()} />
       </div>
     )
   }
-}
-
-const Person = ({ person }) => {
-  return (
-    <tr>
-      <td>{person.name}</td>
-      <td>{person.number}</td>
-    </tr>
-  )
 }
 
 export default App
