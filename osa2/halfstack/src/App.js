@@ -31,7 +31,7 @@ const App = () => {
       ]
     },
     {
-      name: 'Nodej.js',
+      name: 'Node.js',
       id: 2,
       parts: [
         {
@@ -51,7 +51,7 @@ const App = () => {
   return (
     <div>
       <Title title='Opetusohjelma' />
-      {courses.map(course => <Course key={course.id} course={course}/>)}
+      {courses.map(course => <Course key={course.id} course={course} />)}
     </div>
   )
 }
