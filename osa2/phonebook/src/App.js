@@ -2,6 +2,7 @@ import React from 'react'
 import personService from './services/persons'
 import Form from './components/Form'
 import Input from './components/Input'
+import Notification from './components/Notification'
 import PersonList from './components/PersonList'
 
 class App extends React.Component {
@@ -11,7 +12,9 @@ class App extends React.Component {
       persons: [],
       newName: '',
       newNumber: '',
-      filter: ''
+      filter: '',
+      info: null,
+      error: null
     }
   }
 
@@ -54,9 +57,14 @@ class App extends React.Component {
         this.setState({
           persons: this.state.persons.concat(newPerson),
           newName: '',
-          newNumber: ''
+          newNumber: '',
+          info: 'Henkilön lisäys onnistui!'
         })
       })
+
+    setTimeout(() => {
+      this.setState({ info: null })
+    }, 5000)
   }
 
   updatePerson = (id) => {
@@ -68,9 +76,22 @@ class App extends React.Component {
         this.setState({
           persons: this.state.persons.map(person => person.id !== id ? person : changedPerson),
           newName: '',
-          newNumber: ''
+          newNumber: '',
+          info: 'Numeron päivitys onnistui!'
         })
       })
+      .catch(error => {
+        this.setState({
+          persons: this.state.persons.filter(n => n.id !== id),
+          newName: '',
+          newNumber: '',
+          error: `Henkilö '${person.name}' on jo poistettu palvelimelta`
+        })
+      })
+
+    setTimeout(() => {
+      this.setState({ info: null, error: null })
+    }, 5000)
   }
 
   deletePerson = (person) => {
@@ -79,9 +100,22 @@ class App extends React.Component {
         .destroy(person.id)
         .then(response => {
           this.setState({
-            persons: this.state.persons.filter(n => n.id !== person.id)
+            persons: this.state.persons.filter(n => n.id !== person.id),
+            info: 'Henkilön poisto onnistui!'
           })
         })
+        .catch(error => {
+          this.setState({
+            persons: this.state.persons.filter(n => n.id !== person.id),
+            newName: '',
+            newNumber: '',
+            error: `Henkilö '${person.name}' on jo poistettu palvelimelta`
+          })
+        })
+
+      setTimeout(() => {
+        this.setState({ info: null, error: null })
+      }, 5000)
     }
   }
 
@@ -107,6 +141,8 @@ class App extends React.Component {
     return (
       <div>
         <h2>Puhelinluettelo</h2>
+        <Notification message={this.state.info} className="success" />
+        <Notification message={this.state.error} className="error" />
         <Form
           onSubmit={this.addPerson}
           state={this.state}
