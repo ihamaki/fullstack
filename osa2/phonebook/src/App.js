@@ -33,15 +33,19 @@ class App extends React.Component {
 
     const names = this.state.persons.map(person => person.name)
     if (names.includes(this.state.newName)) {
-      alert('Nimi on jo puhelinluettelossa!')
-      this.setState({ newName: '' })
-      return
+      if (window.confirm(`${this.state.newName} on jo puhelinluettelossa! Korvataanko vanha numero uudella?`)) {
+        const personToUpdate = this.state.persons.find(n => n.name === this.state.newName)
+        this.updatePerson(personToUpdate.id)
+        return
+      } else {
+        this.setState({ newName: '' })
+        return
+      }
     }
 
     const personObject = {
       name: this.state.newName,
-      number: this.state.newNumber,
-      id: this.state.newName
+      number: this.state.newNumber
     }
 
     personService
@@ -49,6 +53,20 @@ class App extends React.Component {
       .then(newPerson => {
         this.setState({
           persons: this.state.persons.concat(newPerson),
+          newName: '',
+          newNumber: ''
+        })
+      })
+  }
+
+  updatePerson = (id) => {
+    const person = this.state.persons.find(n => n.id === id)
+    const changedPerson = { ...person, number: this.state.newNumber }
+    personService
+      .update(id, changedPerson)
+      .then(response => {
+        this.setState({
+          persons: this.state.persons.map(person => person.id !== id ? person : changedPerson),
           newName: '',
           newNumber: ''
         })
