@@ -55,6 +55,18 @@ class App extends React.Component {
       })
   }
 
+  deletePerson = (person) => {
+    if (window.confirm(`Haluatko varmasti poistaa henkilön ${person.name}?`)) {
+      personService
+        .destroy(person.id)
+        .then(response => {
+          this.setState({
+            persons: this.state.persons.filter(n => n.id !== person.id)
+          })
+        })
+    }
+  }
+
   handleNameChange = (event) => {
     this.setState({ newName: event.target.value })
   }
@@ -85,7 +97,7 @@ class App extends React.Component {
         />
         <h2>Numerot</h2>
         <Input name="etsi" value={this.state.filter} onChange={this.handleFilterChange} />
-        <PersonList persons={this.filterPersons()} />
+        <PersonList persons={this.filterPersons()} onDelete={this.deletePerson} />
       </div>
     )
   }
