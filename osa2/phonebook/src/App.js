@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import Input from './components/Input'
 import PersonList from './components/PersonList'
 
@@ -6,16 +7,19 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      persons: [
-        { name: 'Arto Hellas', number: '12345' },
-        { name: 'Matti Luukkainen', number: '000' },
-        { name: 'Urpo Urponen', number: '333-222' },
-        { name: 'Ukko Nooa', number: '191919' }
-      ],
+      persons: [],
       newName: '',
       newNumber: '',
       filter: ''
     }
+  }
+
+  componentDidMount() {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        this.setState({ persons: response.data });
+      })
   }
 
   addPerson = (event) => {
