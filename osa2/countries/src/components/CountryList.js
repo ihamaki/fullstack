@@ -2,7 +2,7 @@ import React from 'react'
 import Country from './Country'
 import CountryInfo from './CountryInfo'
 
-const CountryList = ({ countries }) => {
+const CountryList = ({ countries, onClick }) => {
   if (countries.length === 0) {
     return <div>no matches</div>
   }
@@ -14,7 +14,7 @@ const CountryList = ({ countries }) => {
   }
   return (
     <div>
-      {countries.map(country => <Country key={country.alpha2Code} country={country} />)}
+      {countries.map(country => <Country key={country.alpha2Code} country={country} onClick={onClick}/>)}
     </div>
   )
 }

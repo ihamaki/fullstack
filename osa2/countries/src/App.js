@@ -16,12 +16,16 @@ class App extends React.Component {
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        this.setState({ countries: response.data });
+        this.setState({ countries: response.data })
       })
   }
 
   handleFilterChange = (event) => {
-    this.setState({ filter: event.target.value });
+    this.setState({ filter: event.target.value })
+  }
+
+  handleClick = (country) => {
+    this.setState({ filter: country })
   }
 
   filterCountries = () => {
@@ -38,7 +42,7 @@ class App extends React.Component {
     return (
       <div>
         <Input name="find countries" value={this.state.filter} onChange={this.handleFilterChange} />
-        <CountryList countries={this.filterCountries()} />
+        <CountryList countries={this.filterCountries()} onClick={this.handleClick} />
       </div>
     )
   }
