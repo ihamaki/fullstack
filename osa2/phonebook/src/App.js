@@ -1,11 +1,12 @@
 import React from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+import Form from './components/Form'
 import Input from './components/Input'
 import PersonList from './components/PersonList'
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
+  constructor() {
+    super()
     this.state = {
       persons: [],
       newName: '',
@@ -15,10 +16,10 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        this.setState({ persons: response.data });
+        this.setState({ persons: response })
       })
   }
 
@@ -43,13 +44,15 @@ class App extends React.Component {
       id: this.state.newName
     }
 
-    const persons = this.state.persons.concat(personObject)
-
-    this.setState({
-      persons,
-      newName: '',
-      newNumber: ''
-    })
+    personService
+      .create(personObject)
+      .then(newPerson => {
+        this.setState({
+          persons: this.state.persons.concat(newPerson),
+          newName: '',
+          newNumber: ''
+        })
+      })
   }
 
   handleNameChange = (event) => {
@@ -74,17 +77,13 @@ class App extends React.Component {
     return (
       <div>
         <h2>Puhelinluettelo</h2>
-
-        <form onSubmit={this.addPerson}>
-          <Input name="nimi" value={this.state.newName} onChange={this.handleNameChange} />
-          <Input name="numero" value={this.state.newNumber} onChange={this.handleNumberChange} />
-          <div>
-            <button type="submit">lisää</button>
-          </div>
-        </form>
-
+        <Form
+          onSubmit={this.addPerson}
+          state={this.state}
+          onNameChange={this.handleNameChange}
+          onNumberChange={this.handleNumberChange}
+        />
         <h2>Numerot</h2>
-
         <Input name="etsi" value={this.state.filter} onChange={this.handleFilterChange} />
         <PersonList persons={this.filterPersons()} />
       </div>
