@@ -53,6 +53,48 @@ test('specific blog is in the returned list of blogs', async () => {
   expect(blogTitles).toContainEqual('React patterns')
 })
 
+test('valid blog can be added', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api
+    .get('/api/blogs')
+
+  const blogTitles = response.body.map(blog => blog.title)
+  expect(blogTitles).toContainEqual('Canonical string reduction')
+})
+
+test('blog without title cannot be added', async () => {
+  const newBlog = {
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
+  }
+
+  const testBlogs = await api
+    .get('/api/blogs')
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api
+    .get('/api/blogs')
+
+  expect(response.body.length).toBe(testBlogs.body.length)
+})
+
 afterAll(() => {
   server.close()
 })
