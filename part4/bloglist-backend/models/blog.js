@@ -9,6 +9,16 @@ const blogSchema = new mongoose.Schema({
 
 blogSchema.statics.format = function (blog) {
   return {
+    id: blog._id,
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes
+  }
+}
+
+blogSchema.statics.formatTiny = function (blog) {
+  return {
     title: blog.title,
     author: blog.author,
     likes: blog.likes

@@ -85,7 +85,7 @@ describe.skip('list helpers', () => {
         author: 'Edsger W. Dijkstra',
         likes: 12
       }
-      const result = Blog.format(listHelper.favoriteBlog(blogs))
+      const result = Blog.formatTiny(listHelper.favoriteBlog(blogs))
       expect(result).toEqual(favorite)
     })
   })
