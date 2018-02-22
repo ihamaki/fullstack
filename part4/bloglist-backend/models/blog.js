@@ -3,13 +3,22 @@ const mongoose = require('mongoose')
 const url = ''
 
 mongoose.connect(url)
-mongoose.Promise = global.Promise
 
-const Blog = mongoose.model('Blog', {
+const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
   likes: Number
 })
+
+blogSchema.statics.format = function (blog) {
+  return {
+    title: blog.title,
+    author: blog.author,
+    likes: blog.likes
+  }
+}
+
+const Blog = mongoose.model('Blog', blogSchema)
 
 module.exports = Blog
