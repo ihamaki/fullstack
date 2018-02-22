@@ -74,10 +74,16 @@ test('valid blog can be added', async () => {
   expect(blogTitles).toContainEqual('Canonical string reduction')
 })
 
-test('blog without title cannot be added', async () => {
-  const newBlog = {
+test('blog without title or url cannot be added', async () => {
+  const noTitleBlog = {
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12
+  }
+
+  const noUrlBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
     likes: 12
   }
 
@@ -86,13 +92,38 @@ test('blog without title cannot be added', async () => {
 
   await api
     .post('/api/blogs')
-    .send(newBlog)
+    .send(noTitleBlog)
+    .expect(400)
+
+  await api
+    .post('/api/blogs')
+    .send(noUrlBlog)
     .expect(400)
 
   const response = await api
     .get('/api/blogs')
 
   expect(response.body.length).toBe(testBlogs.body.length)
+})
+
+test('likes are set to 0 if blog is added without any likes', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api
+    .get('/api/blogs')
+
+  const blogLikes = response.body.map(blog => blog.likes)
+  expect(blogLikes[blogLikes.length - 1]).toBe(0)
 })
 
 afterAll(() => {
