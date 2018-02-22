@@ -4,21 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "watch": "nodemon index.js",
-    "lint": "eslint .",
-    "test": "jest --verbose"
+    "start": "NODE_ENV=production node index.js",
+    "watch": "NODE_ENV=development nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose",
+    "lint": "eslint ."
   },
   "author": "Maaret Ihamäki",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.4",
+    "dotenv": "^5.0.0",
     "express": "^4.16.2",
     "mongoose": "^5.0.6"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
     "jest": "^22.4.0",
-    "nodemon": "^1.15.1"
+    "nodemon": "^1.15.1",
+    "supertest": "^3.0.0"
   }
 }

@@ -1,9 +1,5 @@
 const mongoose = require('mongoose')
 
-const url = ''
-
-mongoose.connect(url)
-
 const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
