@@ -1,0 +1,9 @@
+PUT http://localhost:3003/api/blogs/5a8ee408d29a6d3a2012f2bf
+Content-Type: application/json
+
+{
+  "title": "Ukon blogi",
+  "author": "Ukko Nooa",
+  "url": "www.google.com",
+  "likes": 5
+}
