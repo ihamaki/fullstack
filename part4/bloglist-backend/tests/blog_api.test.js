@@ -4,7 +4,7 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const { testBlogs, blogsInDb } = require('./test_helper')
 
-describe.skip('when some blogs are already saved', async () => {
+describe('when some blogs are already saved', async () => {
   beforeAll(async () => {
     await Blog.remove({})
 
