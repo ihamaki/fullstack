@@ -2,130 +2,118 @@ const supertest = require('supertest')
 const { app, server } = require('../index')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const { testBlogs, blogsInDb } = require('./test_helper')
 
-const testBlogs = [
-  {
-    _id: '5a422a851b54a676234d17f7',
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    __v: 0
-  },
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0
-  }
-]
+describe('when some blogs are already saved', async () => {
+  beforeAll(async () => {
+    await Blog.remove({})
 
-beforeAll(async () => {
-  await Blog.remove({})
+    const blogObjects = testBlogs.map(blog => new Blog(blog))
+    const promiseArray = blogObjects.map(blog => blog.save())
+    await Promise.all(promiseArray)
+  })
 
-  const blogObjects = testBlogs.map(blog => new Blog(blog))
-  const promiseArray = blogObjects.map(blog => blog.save())
-  await Promise.all(promiseArray)
-})
+  test('all blogs are returned as json', async () => {
+    const savedBlogs = await blogsInDb()
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+    const response = await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
+    expect(response.body.length).toBe(savedBlogs.length)
 
-test('all blogs are returned', async () => {
-  const response = await api
-    .get('/api/blogs')
+    const returnedBlogTitles = response.body.map(blog => blog.title)
+    savedBlogs.forEach(blog => {
+      expect(returnedBlogTitles).toContain(blog.title)
+    })
+  })
 
-  expect(response.body.length).toBe(testBlogs.length)
-})
+  test('specific blog is in the returned list of blogs', async () => {
+    const savedBlogs = await blogsInDb()
+    const firstBlog = savedBlogs[0]
+    console.log(firstBlog.id)
 
-test('specific blog is in the returned list of blogs', async () => {
-  const response = await api
-    .get('/api/blogs')
+    const response = await api
+      .get(`/api/blogs/${firstBlog.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  const blogTitles = response.body.map(blog => blog.title)
-  expect(blogTitles).toContainEqual('React patterns')
-})
+    expect(response.body.title).toBe(firstBlog.title)
+  })
 
-test('valid blog can be added', async () => {
-  const newBlog = {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12
-  }
+  describe('adding a new blog', async () => {
+    test('valid blog can be added', async () => {
+      const existingBlogs = await blogsInDb()
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+      const newBlog = {
+        title: 'Type wars',
+        author: 'Robert C. Martin',
+        url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+        likes: 2
+      }
 
-  const response = await api
-    .get('/api/blogs')
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
 
-  const blogTitles = response.body.map(blog => blog.title)
-  expect(blogTitles).toContainEqual('Canonical string reduction')
-})
+      const blogsAfterAddition = await blogsInDb()
 
-test('blog without title or url cannot be added', async () => {
-  const noTitleBlog = {
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12
-  }
+      expect(blogsAfterAddition.length).toBe(existingBlogs.length + 1)
+    })
 
-  const noUrlBlog = {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    likes: 12
-  }
+    test('blog without title or url cannot be added, fails with status 400', async () => {
+      const noTitleBlog = {
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+        likes: 12
+      }
 
-  const testBlogs = await api
-    .get('/api/blogs')
+      const noUrlBlog = {
+        title: 'Canonical string reduction',
+        author: 'Edsger W. Dijkstra',
+        likes: 12
+      }
 
-  await api
-    .post('/api/blogs')
-    .send(noTitleBlog)
-    .expect(400)
+      const existingBlogs = await blogsInDb()
 
-  await api
-    .post('/api/blogs')
-    .send(noUrlBlog)
-    .expect(400)
+      await api
+        .post('/api/blogs')
+        .send(noTitleBlog)
+        .expect(400)
 
-  const response = await api
-    .get('/api/blogs')
+      await api
+        .post('/api/blogs')
+        .send(noUrlBlog)
+        .expect(400)
 
-  expect(response.body.length).toBe(testBlogs.body.length)
-})
+      const blogsAfterAddition = await blogsInDb()
 
-test('likes are set to 0 if blog is added without any likes', async () => {
-  const newBlog = {
-    title: 'Canonical string reduction',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
-  }
+      expect(blogsAfterAddition.length).toBe(existingBlogs.length)
+    })
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+    test('likes are set to 0 if blog is added without any likes', async () => {
+      const newBlog = {
+        title: 'Canonical string reduction',
+        author: 'Edsger W. Dijkstra',
+        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+      }
 
-  const response = await api
-    .get('/api/blogs')
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
 
-  const blogLikes = response.body.map(blog => blog.likes)
-  expect(blogLikes[blogLikes.length - 1]).toBe(0)
-})
+      const blogs = await blogsInDb()
+      const blogLikes = blogs.map(blog => blog.likes)
+      expect(blogLikes[blogLikes.length - 1]).toBe(0)
+    })
+  })
 
-afterAll(() => {
-  server.close()
+  afterAll(() => {
+    server.close()
+  })
 })

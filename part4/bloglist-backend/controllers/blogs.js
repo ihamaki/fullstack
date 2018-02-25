@@ -26,4 +26,19 @@ blogsRouter.post('/', async (request, response) => {
   }
 })
 
+blogsRouter.get('/:id', async (request, response) => {
+  try {
+    const blog = await Blog.findById(request.params.id)
+
+    if (blog) {
+      response.json(Blog.format(blog))
+    } else {
+      response.status(404).end()
+    }
+  } catch (exception) {
+    console.log(exception)
+    response.status(400).send({ error: 'malformatted id' })
+  }
+})
+
 module.exports = blogsRouter
