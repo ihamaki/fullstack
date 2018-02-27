@@ -5,7 +5,7 @@ const User = require('../models/user')
 usersRouter.get('/', async (require, response) => {
   const users = await User
     .find({})
-    .populate('blogs', { title: 1, author: 1, likes: 1})
+    .populate('blogs', { title: 1, author: 1, url: 1, likes: 1 })
 
   response.json(users.map(User.format))
 })
@@ -19,7 +19,7 @@ usersRouter.post('/', async (request, response) => {
       return response.status(400).json({ error: 'username must be unique' })
     }
 
-    if (body.password.length <= 3) {
+    if (body.password.length < 3) {
       return response.status(400).json({ error: 'password must be at least 3 characters' })
     }
 
@@ -29,16 +29,12 @@ usersRouter.post('/', async (request, response) => {
     const user = new User({
       username: body.username,
       name: body.name,
-      adult: body.adult,
+      adult: body.adult === undefined ? true : body.adult,
       passwordHash
     })
 
-    if (user.adult === undefined) {
-      user.adult = true
-    }
-
     const savedUser = await user.save()
-    response.json(savedUser)
+    response.status(201).json(savedUser)
   } catch (exception) {
     console.log(exception)
     response.status(500).json({ error: 'something went wrong...' })
