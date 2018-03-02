@@ -96,6 +96,22 @@ class App extends React.Component {
       })
   }
 
+  likeBlog = (id) => {
+    const blog = this.state.blogs.find(blog => blog.id === id)
+    const updatedBlogObject = { ...blog, likes: blog.likes + 1 }
+
+    blogService
+      .update(id, updatedBlogObject)
+      .then(changedBlog => {
+        this.setState({
+          blogs: this.state.blogs.map(b => b.id !== id ? b : changedBlog)
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+  }
+
   render() {
     const loginForm = () => (
       <Togglable buttonLabel='login to bloglist'>
@@ -128,10 +144,12 @@ class App extends React.Component {
         {this.state.user === null ?
           loginForm() :
           <div>
-            <p>{this.state.user.name} logged in <br/>
-            <button onClick={this.logout}>logout</button></p>
+            <p>
+              {this.state.user.name} logged in <br />
+              <button onClick={this.logout}>logout</button>
+            </p>
             {blogForm()}
-            <BlogList blogs={this.state.blogs} />
+            <BlogList blogs={this.state.blogs} onBlogLike={this.likeBlog} />
           </div>
         }
       </div>

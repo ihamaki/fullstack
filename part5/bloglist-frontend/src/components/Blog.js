@@ -13,6 +13,13 @@ class Blog extends React.Component {
     this.setState({ showFullInfo: !this.state.showFullInfo })
   }
 
+  updateLikes = (event) => {
+    event.preventDefault()
+    const blog = this.state.blog
+    this.props.onBlogLike(blog.id)
+    this.setState({ blog: { ...blog, likes: blog.likes + 1 } })
+  }
+
   render() {
     const blog = this.state.blog
     const blogStyle = {
@@ -30,7 +37,10 @@ class Blog extends React.Component {
             <div onClick={this.toggleVisibility}>{blog.title}</div>
             <div>written by {blog.author}</div>
             <div><a href={blog.url}>{blog.url}</a></div>
-            <div>{blog.likes} likes <button>like</button></div>
+            <div>
+              {blog.likes} likes
+              <button onClick={this.updateLikes}>like</button>
+            </div>
             <div>added by someone</div>
           </div> :
           <div onClick={this.toggleVisibility}>
