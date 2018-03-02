@@ -3,6 +3,7 @@ import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -84,6 +85,7 @@ class App extends React.Component {
         setTimeout(() => {
           this.setState({ info: null })
         }, 5000)
+        this.blogForm.toggleVisibility()
       })
       .catch(error => {
         console.log(error)
@@ -95,25 +97,40 @@ class App extends React.Component {
   }
 
   render() {
+    const loginForm = () => (
+      <Togglable buttonLabel='login to bloglist'>
+        <LoginForm
+          state={this.state}
+          handleLogin={this.login}
+          handleFieldChange={this.handleFieldChange}
+        />
+      </Togglable>
+    )
+
+    const blogForm = () => (
+      <Togglable buttonLabel='add a new blog' ref={component => this.blogForm = component}>
+        <div>
+          <BlogForm
+            state={this.state}
+            onSubmit={this.addBlog}
+            onBlogFormChange={this.handleFieldChange}
+          />
+        </div>
+      </Togglable>
+    )
+
     return (
       <div>
         <h1>Bloglist</h1>
-        <Notification message={this.state.error} className="error" />
-        <Notification message={this.state.info} className="success" />
+        <Notification message={this.state.error} className='error' />
+        <Notification message={this.state.info} className='success' />
 
         {this.state.user === null ?
-          <LoginForm
-            state={this.state}
-            handleLogin={this.login}
-            handleFieldChange={this.handleFieldChange}
-          /> :
+          loginForm() :
           <div>
-            <p>{this.state.user.name} logged in <button onClick={this.logout}>logout</button></p>
-            <BlogForm
-              state={this.state}
-              onSubmit={this.addBlog}
-              onBlogFormChange={this.handleFieldChange}
-            />
+            <p>{this.state.user.name} logged in <br/>
+            <button onClick={this.logout}>logout</button></p>
+            {blogForm()}
             <BlogList blogs={this.state.blogs} />
           </div>
         }
