@@ -12,6 +12,7 @@ class App extends React.Component {
     this.state = {
       blogs: [],
       error: null,
+      info: null,
       username: '',
       password: '',
       user: null,
@@ -25,7 +26,6 @@ class App extends React.Component {
     blogService.getAll().then(blogs =>
       this.setState({ blogs })
     )
-
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
@@ -41,8 +41,10 @@ class App extends React.Component {
         username: this.state.username,
         password: this.state.password
       })
+
       window.localStorage.setItem('loggedUser', JSON.stringify(user))
-      this.setState({ username: '', password: '', user: user })
+      blogService.setToken(user.token)
+      this.setState({ username: '', password: '', user: user, info: 'logged in succesfully!' })
     } catch (exception) {
       this.setState({ error: 'wrong username or password' })
       setTimeout(() => {
@@ -62,6 +64,7 @@ class App extends React.Component {
 
   addBlog = (event) => {
     event.preventDefault()
+
     const blogObject = {
       title: this.state.newTitle,
       author: this.state.newAuthor,
@@ -75,17 +78,28 @@ class App extends React.Component {
           blogs: this.state.blogs.concat(blog),
           newTitle: '',
           newAuthor: '',
-          newUrl: ''
+          newUrl: '',
+          info: 'new blog ' + blogObject.title + ' was succesfully added'
         })
+        setTimeout(() => {
+          this.setState({ info: null })
+        }, 5000)
       })
-
+      .catch(error => {
+        console.log(error)
+        this.setState({ error: 'title or url missing' })
+        setTimeout(() => {
+          this.setState({ error: null })
+        }, 5000)
+      })
   }
 
   render() {
     return (
       <div>
         <h1>Bloglist</h1>
-        <Notification message={this.state.error} />
+        <Notification message={this.state.error} className="error" />
+        <Notification message={this.state.info} className="success" />
 
         {this.state.user === null ?
           <LoginForm
