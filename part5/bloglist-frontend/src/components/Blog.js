@@ -21,6 +21,12 @@ class Blog extends React.Component {
     this.setState({ blog: { ...blog, likes: blog.likes + 1 } })
   }
 
+  destroyBlog = (event) => {
+    event.preventDefault()
+    const blog = this.state.blog
+    this.props.onBlogDelete(blog.id)
+  }
+
   render() {
     const blog = this.state.blog
     const blogStyle = {
@@ -43,6 +49,7 @@ class Blog extends React.Component {
               <button onClick={this.updateLikes}>like</button>
             </div>
             <div>added by {this.state.user.name}</div>
+            <div><button onClick={this.destroyBlog}>delete</button></div>
           </div> :
           <div onClick={this.toggleVisibility}>
             {blog.title} {blog.author}

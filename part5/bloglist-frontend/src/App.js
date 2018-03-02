@@ -112,6 +112,28 @@ class App extends React.Component {
       })
   }
 
+  deleteBlog = (id) => {
+    const blog = this.state.blogs.find(blog => blog.id === id)
+
+    if (window.confirm('are you sure you want to delete blog ' + blog.title + '?')) {
+      blogService
+        .destroy(id)
+        .then(() => {
+          this.setState({
+            blogs: this.state.blogs.filter(b => b.id !== id),
+            info: 'blog ' + blog.title + ' was succesfully removed!'
+          })
+        })
+        .catch(error => {
+          console.log(error)
+          this.setState({ error: 'you can only remove blogs you have added' })
+          setTimeout(() => {
+            this.setState({ error: null })
+          }, 5000)
+        })
+    }
+  }
+
   render() {
     const loginForm = () => (
       <Togglable buttonLabel='login to bloglist'>
@@ -149,7 +171,12 @@ class App extends React.Component {
               <button onClick={this.logout}>logout</button>
             </p>
             {blogForm()}
-            <BlogList blogs={this.state.blogs} user={this.state.user} onBlogLike={this.likeBlog} />
+            <BlogList
+              blogs={this.state.blogs}
+              user={this.state.user}
+              onBlogLike={this.likeBlog}
+              onBlogDelete={this.deleteBlog}
+            />
           </div>
         }
       </div>
