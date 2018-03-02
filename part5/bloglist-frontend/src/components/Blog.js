@@ -49,7 +49,10 @@ class Blog extends React.Component {
               <button onClick={this.updateLikes}>like</button>
             </div>
             <div>added by {this.state.user.name}</div>
-            <div><button onClick={this.destroyBlog}>delete</button></div>
+            {!blog.user || this.state.user.username === blog.user.username ?
+              <div><button onClick={this.destroyBlog}>delete</button></div> :
+              null
+            }
           </div> :
           <div onClick={this.toggleVisibility}>
             {blog.title} {blog.author}
