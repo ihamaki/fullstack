@@ -149,7 +149,7 @@ class App extends React.Component {
               <button onClick={this.logout}>logout</button>
             </p>
             {blogForm()}
-            <BlogList blogs={this.state.blogs} onBlogLike={this.likeBlog} />
+            <BlogList blogs={this.state.blogs} user={this.state.user} onBlogLike={this.likeBlog} />
           </div>
         }
       </div>

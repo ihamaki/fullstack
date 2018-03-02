@@ -5,6 +5,7 @@ class Blog extends React.Component {
     super(props)
     this.state = {
       blog: props.blog,
+      user: props.user,
       showFullInfo: false
     }
   }
@@ -41,7 +42,7 @@ class Blog extends React.Component {
               {blog.likes} likes
               <button onClick={this.updateLikes}>like</button>
             </div>
-            <div>added by someone</div>
+            <div>added by {this.state.user.name}</div>
           </div> :
           <div onClick={this.toggleVisibility}>
             {blog.title} {blog.author}
