@@ -1,5 +1,7 @@
 import React from 'react'
-import Blog from './components/Blog'
+import BlogList from './components/BlogList'
+import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,7 +14,10 @@ class App extends React.Component {
       error: null,
       username: '',
       password: '',
-      user: null
+      user: null,
+      newTitle: '',
+      newAuthor: '',
+      newUrl: ''
     }
   }
 
@@ -25,6 +30,7 @@ class App extends React.Component {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.setState({ user })
+      blogService.setToken(user.token)
     }
   }
 
@@ -50,58 +56,56 @@ class App extends React.Component {
     window.location.reload()
   }
 
-  handleLoginFieldChange = (event) => {
+  handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
   }
 
+  addBlog = (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: this.state.newTitle,
+      author: this.state.newAuthor,
+      url: this.state.newUrl
+    }
+
+    blogService
+      .create(blogObject)
+      .then(blog => {
+        this.setState({
+          blogs: this.state.blogs.concat(blog),
+          newTitle: '',
+          newAuthor: '',
+          newUrl: ''
+        })
+      })
+
+  }
+
   render() {
-    const loginForm = () => (
-      <div>
-        <Notification message={this.state.error} />
-        <h2>Login to application</h2>
-        <form onSubmit={this.login}>
-          <div>
-            username
-            <input
-              type="text"
-              name="username"
-              value={this.state.username}
-              onChange={this.handleLoginFieldChange}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type="password"
-              name="password"
-              value={this.state.password}
-              onChange={this.handleLoginFieldChange}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
-    )
-
-    const blogsListed = () => (
-      <div>
-        <h2>blogs</h2>
-        <p>{this.state.user.name} logged in <button onClick={this.logout}>logout</button></p>
-        {this.state.blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
-    )
-
     return (
       <div>
         <h1>Bloglist</h1>
         <Notification message={this.state.error} />
-        {this.state.user === null && loginForm()}
-        {this.state.user !== null && blogsListed()}
+
+        {this.state.user === null ?
+          <LoginForm
+            state={this.state}
+            handleLogin={this.login}
+            handleFieldChange={this.handleFieldChange}
+          /> :
+          <div>
+            <p>{this.state.user.name} logged in <button onClick={this.logout}>logout</button></p>
+            <BlogForm
+              state={this.state}
+              onSubmit={this.addBlog}
+              onBlogFormChange={this.handleFieldChange}
+            />
+            <BlogList blogs={this.state.blogs} />
+          </div>
+        }
       </div>
     )
   }
 }
 
-export default App;
+export default App
