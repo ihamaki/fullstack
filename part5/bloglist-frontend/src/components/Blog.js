@@ -1,6 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class Blog extends React.Component {
+  static propTypes = {
+    blog: PropTypes.object.isRequired,
+    onBlogLike: PropTypes.func.isRequired,
+    onBlogDelete: PropTypes.func.isRequired
+  }
+
   constructor(props) {
     super(props)
     this.state = {
