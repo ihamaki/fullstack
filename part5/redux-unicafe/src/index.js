@@ -1,10 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { createStore } from 'redux'
+import counterReducer from './reducer'
+
+const store = createStore(counterReducer)
 
 const Statistiikka = () => {
-  const palautteita = 0
+  const reviews = store.getState()
+  const all = reviews.good + reviews.ok + reviews.bad
 
-  if (palautteita === 0) {
+  if (all === 0) {
     return (
       <div>
         <h2>stataistiikka</h2>
@@ -13,6 +18,9 @@ const Statistiikka = () => {
     )
   }
 
+  const mean = (reviews.good - reviews.bad) / all
+  const positives = (reviews.good / all) * 100
+
   return (
     <div>
       <h2>statistiikka</h2>
@@ -20,35 +28,35 @@ const Statistiikka = () => {
         <tbody>
           <tr>
             <td>hyvä</td>
-            <td></td>
+            <td>{reviews.good}</td>
           </tr>
           <tr>
             <td>neutraali</td>
-            <td></td>
+            <td>{reviews.ok}</td>
           </tr>
           <tr>
             <td>huono</td>
-            <td></td>
+            <td>{reviews.bad}</td>
           </tr>
           <tr>
             <td>keskiarvo</td>
-            <td></td>
+            <td>{mean}</td>
           </tr>
           <tr>
             <td>positiivisia</td>
-            <td></td>
+            <td>{positives} %</td>
           </tr>
         </tbody>
       </table>
 
-      <button>nollaa tilasto</button>
+      <button onClick={() => store.dispatch({ type: 'ZERO' })}>nollaa tilasto</button>
     </div >
   )
 }
 
 class App extends React.Component {
-  klik = (nappi) => () => {
-
+  klik = (button) => () => {
+    store.dispatch({ type: button })
   }
 
   render() {
@@ -64,4 +72,9 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const renderApp = () => {
+  ReactDOM.render(<App />, document.getElementById('root'))
+}
+
+renderApp()
+store.subscribe(renderApp)
