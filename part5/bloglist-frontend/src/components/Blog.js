@@ -44,10 +44,12 @@ class Blog extends React.Component {
       marginBottom: 5
     }
 
+    const addedBy = this.state.user ? this.state.user.name : "anonymous"
+
     return (
       <div style={blogStyle}>
         {this.state.showFullInfo ?
-          <div>
+          <div className="fullInfo">
             <div onClick={this.toggleVisibility}>{blog.title}</div>
             <div>written by {blog.author}</div>
             <div><a href={blog.url}>{blog.url}</a></div>
@@ -55,13 +57,13 @@ class Blog extends React.Component {
               {blog.likes} likes
               <button onClick={this.updateLikes}>like</button>
             </div>
-            <div>added by {this.state.user.name}</div>
+            <div>added by {addedBy}</div>
             {!blog.user || this.state.user.username === blog.user.username ?
               <div><button onClick={this.destroyBlog}>delete</button></div> :
               null
             }
           </div> :
-          <div onClick={this.toggleVisibility}>
+          <div className="minimalInfo" onClick={this.toggleVisibility}>
             {blog.title} {blog.author}
           </div>
         }
