@@ -164,14 +164,18 @@ class App extends React.Component {
         <Notification message={this.state.info} className='success' />
 
         {this.state.user === null ?
-          loginForm() :
-          <div>
+          <div className='loginForm'>
+            {loginForm()}
+          </div>
+          :
+          <div className='blogForm'>
             <p>
               {this.state.user.name} logged in <br />
               <button onClick={this.logout}>logout</button>
             </p>
             {blogForm()}
             <BlogList
+              className='blogList'
               blogs={this.state.blogs}
               user={this.state.user}
               onBlogLike={this.likeBlog}
