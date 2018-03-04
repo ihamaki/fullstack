@@ -4,9 +4,19 @@ import reducer from './reducer'
 class App extends React.Component {
   addVote = (id) => () => {
     this.props.store.dispatch({
-      type: 'ADD',
+      type: 'VOTE',
       data: id
     })
+  }
+
+  newAnecdote = (event) => {
+    event.preventDefault()
+    const anecdote = event.target.anecdote.value
+    this.props.store.dispatch({
+      type: 'NEW',
+      data: anecdote
+    })
+    event.target.anecdote.value =''
   }
 
   render() {
@@ -29,9 +39,9 @@ class App extends React.Component {
           </div>
         )}
         <h2>create new</h2>
-        <form>
-          <div><input /></div>
-          <button>create</button>
+        <form onSubmit={this.newAnecdote}>
+          <div><input name="anecdote" /></div>
+          <button type="submit">create</button>
         </form>
       </div>
     )
