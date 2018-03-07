@@ -12,7 +12,9 @@ class AnecdoteList extends React.Component {
   }
 
   render() {
-    const anecdotes = this.props.store.getState().anecdotes
+    const filter = this.props.store.getState().filter
+    const allAnecdotes = this.props.store.getState().anecdotes
+    const anecdotes = allAnecdotes.filter(a => a.content.trim().toLowerCase().match(filter))
     return (
       <div>
         <h2>Anecdotes</h2>
