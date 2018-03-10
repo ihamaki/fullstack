@@ -1,13 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import anecdoteService from '../services/anecdotes'
 import { anecdoteVoting } from '../reducers/anecdoteReducer'
 import { notificationVote, notificationRemove } from '../reducers/notificationReducer'
 
 class AnecdoteList extends React.Component {
   handleClick = async (anecdote) => {
-    await anecdoteService.update(anecdote.id, { ...anecdote, votes: anecdote.votes + 1 })
-    this.props.anecdoteVoting(anecdote.id)
+    this.props.anecdoteVoting(anecdote)
     this.props.notificationVote(anecdote.content)
     setTimeout(() => {
       this.props.notificationRemove()
